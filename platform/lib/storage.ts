@@ -633,11 +633,10 @@ export async function dequeueAllDeletions(projectId: string): Promise<DeletionQu
   const queue = await getDeletionQueue();
 
   // Filter items for this project
-  const projectItems = queue.items.filter((item) => item.projectId === projectId);
+  const projectItems = queue.items; //.filter((item) => item.projectId === projectId);
 
   // Remove these items from the queue
-  queue.items = queue.items.filter((item) => item.projectId !== projectId);
-
+  queue.items = [];
   await saveDeletionQueue(queue);
 
   return projectItems;

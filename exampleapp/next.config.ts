@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
 };
 
 export default withInstrumentation({
-  platformUrl: "http://localhost:3001/api/usage",
+  platformUrl: "https://dead-code-deleter.vercel.app/api/usage",
   projectId: "example-app",
   debug: true,
   uploadInterval: 10000,

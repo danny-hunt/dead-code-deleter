@@ -4,7 +4,10 @@
   "private": true,
   "scripts": {
     "analyze": "tsx scripts/analyze-functions.ts",
-    "upload-metadata": "tsx scripts/upload-metadata.ts"
+    "upload-metadata": "tsx scripts/upload-metadata.ts",
+    "agent": "cd agent && npm run dev",
+    "agent:build": "cd agent && npm run build",
+    "agent:start": "cd agent && npm start"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

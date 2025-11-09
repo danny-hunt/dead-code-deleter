@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       const file = parts.slice(0, parts.length - 2).join(":");
 
       deletionItems.push({
-        projectId: body.projectId,
+        projectId: "exampleapp",
         file,
         name,
         line,
