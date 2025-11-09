@@ -1,0 +1,56 @@
+{
+  "name": "@dead-code-deleter/instrument",
+  "version": "0.1.0",
+  "description": "Automatic TypeScript function usage instrumentation for dead code detection",
+  "main": "dist/runtime.js",
+  "types": "dist/runtime.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/runtime.js",
+      "import": "./dist/runtime.js",
+      "types": "./dist/runtime.d.ts"
+    },
+    "./next": {
+      "require": "./dist/next.js",
+      "import": "./dist/next.js",
+      "types": "./dist/next.d.ts"
+    },
+    "./babel-plugin": {
+      "require": "./dist/babel-plugin.js",
+      "import": "./dist/babel-plugin.js",
+      "types": "./dist/babel-plugin.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "instrumentation",
+    "dead-code",
+    "typescript",
+    "nextjs",
+    "babel"
+  ],
+  "dependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/types": "^7.23.0"
+  },
+  "devDependencies": {
+    "@types/babel__core": "^7.20.0",
+    "@types/babel__traverse": "^7.20.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "next": ">=13.0.0"
+  }
+}
+
+
+
+

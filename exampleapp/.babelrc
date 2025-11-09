@@ -1,0 +1,6 @@
+{
+  "presets": ["next/babel"],
+  "plugins": ["@dead-code-deleter/instrument/babel-plugin"],
+  "ignore": ["**/node_modules/**", "**/.next/**", "**/dist/**"],
+  "exclude": "**/node_modules/**"
+}

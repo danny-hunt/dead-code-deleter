@@ -2,6 +2,16 @@ import { NextResponse } from "next/server";
 import { analytics } from "@/lib/db";
 import { ApiResponse, AnalyticsData } from "@/lib/types";
 
+function transformAnalyticsData(analyticsData: AnalyticsData): AnalyticsData {
+  return {
+    ...analyticsData,
+    timeByType: analyticsData.timeByType.map((type) => ({
+      ...type,
+      percent: type.percent * 100,
+    })),
+  };
+}
+
 // GET /api/analytics - Get analytics data
 export async function GET() {
   try {
@@ -9,7 +19,7 @@ export async function GET() {
 
     const response: ApiResponse<AnalyticsData> = {
       success: true,
-      data: analyticsData,
+      data: transformAnalyticsData(analyticsData),
     };
 
     return NextResponse.json(response);

@@ -1,6 +1,15 @@
 // API Client utilities for making requests to backend
 
-import { ApiResponse, Meeting, DashboardStats, MeetingTrend, AnalyticsData, CalendarEvent, MeetingSummary, UserSettings } from "./types";
+import {
+  ApiResponse,
+  Meeting,
+  MeetingSummary,
+  DashboardStats,
+  MeetingTrend,
+  AnalyticsData,
+  CalendarEvent,
+  UserSettings,
+} from "./types";
 
 class ApiClient {
   private baseUrl: string;
@@ -30,7 +39,12 @@ class ApiClient {
   }
 
   // Meetings
-  async getMeetings(params?: { q?: string; status?: string; startDate?: string; endDate?: string }): Promise<ApiResponse<Meeting[]>> {
+  async getMeetings(params?: {
+    q?: string;
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<ApiResponse<Meeting[]>> {
     const searchParams = new URLSearchParams();
     if (params?.q) searchParams.append("q", params.q);
     if (params?.status) searchParams.append("status", params.status);
