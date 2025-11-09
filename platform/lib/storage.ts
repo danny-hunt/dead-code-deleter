@@ -1,5 +1,12 @@
 import { put, list } from "@vercel/blob";
-import { ProjectIndex, ProjectUsage, ProjectSummary, UsagePayload, StoredFunction, FunctionMetadataFile } from "./types";
+import {
+  ProjectIndex,
+  ProjectUsage,
+  ProjectSummary,
+  UsagePayload,
+  StoredFunction,
+  FunctionMetadataFile,
+} from "./types";
 import { getFunctionKey } from "./utils";
 import { promises as fs } from "fs";
 import path from "path";
@@ -39,8 +46,8 @@ async function ensureLocalStorageDir(): Promise<void> {
   if (isServerlessEnvironment() && !process.env.BLOB_READ_WRITE_TOKEN) {
     throw new Error(
       "BLOB_READ_WRITE_TOKEN must be configured for serverless deployments. " +
-      "Local storage is only available for local development. " +
-      "Please set the BLOB_READ_WRITE_TOKEN environment variable."
+        "Local storage is only available for local development. " +
+        "Please set the BLOB_READ_WRITE_TOKEN environment variable."
     );
   }
 
@@ -51,7 +58,7 @@ async function ensureLocalStorageDir(): Promise<void> {
     console.error("Error creating local storage directory:", error);
     throw new Error(
       `Failed to create local storage directory at ${LOCAL_STORAGE_DIR}. ` +
-      `This may indicate insufficient permissions or an unsupported environment.`
+        `This may indicate insufficient permissions or an unsupported environment.`
     );
   }
 }
@@ -282,9 +289,9 @@ async function saveProjectUsage(projectId: string, usage: ProjectUsage): Promise
  */
 function normalizeFilePathForStorage(filePath: string): string {
   if (!filePath) return "";
-  
+
   let normalized = filePath.replace(/\\/g, "/");
-  
+
   // Remove absolute path prefixes - find the last occurrence of project directories
   const projectDirs = ["app", "components", "lib", "src", "pages", "utils"];
   for (const dir of projectDirs) {
@@ -294,16 +301,16 @@ function normalizeFilePathForStorage(filePath: string): string {
       return `${dir}/${match[1]}`;
     }
   }
-  
+
   // If path starts with exampleapp/, remove that prefix
   if (normalized.includes("exampleapp/")) {
     const exampleappIndex = normalized.indexOf("exampleapp/");
     normalized = normalized.substring(exampleappIndex + "exampleapp/".length);
   }
-  
+
   // Remove leading slashes
   normalized = normalized.replace(/^\/+/, "");
-  
+
   return normalized;
 }
 
@@ -344,7 +351,7 @@ export async function updateProjectUsage(payload: UsagePayload): Promise<void> {
         usage.functions[key].lastSeen = timestamp;
       }
       updatedCount++;
-      
+
       // Log if we detect a potential issue (calls going backwards)
       if (func.callCount < 0) {
         console.warn(`[Usage Update] Negative call count for ${key}: ${func.callCount}`);
@@ -368,7 +375,9 @@ export async function updateProjectUsage(payload: UsagePayload): Promise<void> {
 
   // Log update summary
   const finalFunctionCount = Object.keys(usage.functions).length;
-  console.log(`[Usage Update] Project: ${projectId}, Functions: ${originalFunctionCount} -> ${finalFunctionCount} (${updatedCount} updated, ${newCount} new), Total incoming: ${functions.length}`);
+  console.log(
+    `[Usage Update] Project: ${projectId}, Functions: ${originalFunctionCount} -> ${finalFunctionCount} (${updatedCount} updated, ${newCount} new), Total incoming: ${functions.length}`
+  );
 
   // Save updated usage data
   await saveProjectUsage(projectId, usage);
@@ -436,9 +445,11 @@ export async function getProjectMetadata(projectId: string): Promise<FunctionMet
             // Try from current working directory (if running from root)
             path.join(process.cwd(), "exampleapp", "function-metadata.json"),
             // Try from __dirname if available (for compiled code)
-            typeof __dirname !== "undefined" ? path.join(__dirname, "..", "..", "exampleapp", "function-metadata.json") : null,
+            typeof __dirname !== "undefined"
+              ? path.join(__dirname, "..", "..", "exampleapp", "function-metadata.json")
+              : null,
           ].filter((p): p is string => p !== null);
-          
+
           console.log(`[Local Storage] Metadata not found in storage, trying fallback paths for ${projectId}`);
           for (const exampleappPath of possiblePaths) {
             try {
@@ -449,6 +460,7 @@ export async function getProjectMetadata(projectId: string): Promise<FunctionMet
                 return metadata;
               }
             } catch (pathError) {
+              console.error(`[Local Storage] Error reading metadata file:`, pathError);
               // Try next path
               continue;
             }
