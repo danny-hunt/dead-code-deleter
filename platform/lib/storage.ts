@@ -8,8 +8,21 @@ import path from "path";
 const PROJECT_INDEX_PATH = "projects/index.json";
 const getProjectUsagePath = (projectId: string) => `projects/${projectId}/usage.json`;
 
+// Check if we're running in a serverless environment (Vercel, AWS Lambda, etc.)
+function isServerlessEnvironment(): boolean {
+  return !!(
+    process.env.VERCEL ||
+    process.env.AWS_LAMBDA_FUNCTION_NAME ||
+    process.env.FUNCTION_NAME ||
+    process.env.NETLIFY
+  );
+}
+
 // Local storage directory for development
-const LOCAL_STORAGE_DIR = path.join(process.cwd(), ".local-storage");
+// Use /tmp on serverless platforms, local directory otherwise
+const LOCAL_STORAGE_DIR = isServerlessEnvironment()
+  ? path.join("/tmp", ".local-storage")
+  : path.join(process.cwd(), ".local-storage");
 
 /**
  * Check if we should use local storage (development mode)
@@ -22,11 +35,23 @@ function shouldUseLocalStorage(): boolean {
  * Ensure local storage directory exists
  */
 async function ensureLocalStorageDir(): Promise<void> {
+  if (isServerlessEnvironment() && !process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error(
+      "BLOB_READ_WRITE_TOKEN must be configured for serverless deployments. " +
+      "Local storage is only available for local development. " +
+      "Please set the BLOB_READ_WRITE_TOKEN environment variable."
+    );
+  }
+
   try {
     await fs.mkdir(LOCAL_STORAGE_DIR, { recursive: true });
     await fs.mkdir(path.join(LOCAL_STORAGE_DIR, "projects"), { recursive: true });
   } catch (error) {
     console.error("Error creating local storage directory:", error);
+    throw new Error(
+      `Failed to create local storage directory at ${LOCAL_STORAGE_DIR}. ` +
+      `This may indicate insufficient permissions or an unsupported environment.`
+    );
   }
 }
 
