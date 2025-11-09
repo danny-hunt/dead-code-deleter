@@ -1,5 +1,8 @@
 # MeetingFlow
 
+# GH pull request command
+`gh pr create --title "Your PR title" --body "Description of changes" --base "main" --head "rosh"`
+
 A modern meeting management dashboard built with Next.js, TypeScript, and shadcn/ui. MeetingFlow helps you track, analyze, and optimize your meeting schedule to reclaim your time.
 
 ## Features
