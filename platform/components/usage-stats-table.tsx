@@ -9,90 +9,87 @@ import {
   getUsageLevelColor,
   getUsageLevelIcon,
 } from "@/lib/utils";
-import { ArrowUpDown, ArrowUp, ArrowDown, Users, Filter } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, Users, Filter, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface UsageStatsTableProps {
   functions: StoredFunction[];
   onSelectFunctions: (selectedKeys: string[]) => void;
+  projectId: string;
 }
 
-export function UsageStatsTable({
-  functions,
-  onSelectFunctions,
-}: UsageStatsTableProps) {
+export function UsageStatsTable({ functions, onSelectFunctions, projectId }: UsageStatsTableProps) {
   const [sortColumn, setSortColumn] = useState<SortColumn>("totalCalls");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
   const [showOnlyMeaningful, setShowOnlyMeaningful] = useState<boolean>(false);
+  const [deletingKeys, setDeletingKeys] = useState<Set<string>>(new Set());
 
   // Determine if a function is "meaningful" (not weird/generated)
   // Use a whitelist approach - only include clearly meaningful functions
   const isMeaningfulFunction = (func: StoredFunction): boolean => {
     const name = func.name;
     const nameLower = name.toLowerCase();
-    
+
     // Exclude anonymous/default functions
     if (nameLower === "anonymous" || nameLower === "anon" || nameLower === "default") {
       return false;
     }
-    
+
     // Exclude functions in generated/test directories
     if (func.file.includes("/.next/") || func.file.includes("/node_modules/")) {
       return false;
     }
-    
+
     // Exclude HTTP method handlers (API routes) - these are too generic
     const httpMethods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];
     if (httpMethods.includes(name)) {
       return false;
     }
-    
+
     // Include React components (PascalCase, at least 3 chars)
     if (/^[A-Z][a-zA-Z0-9]{2,}$/.test(name)) {
       return true;
     }
-    
+
     // Include functions that start with "use" (React hooks) - these are meaningful
     if (/^use[A-Z][a-zA-Z0-9]+$/.test(name)) {
       return true;
     }
-    
+
     // Include functions that start with common meaningful prefixes
     const meaningfulPrefixes = [
-      /^handle[A-Z]/,      // handleSubmit, handleSearch, etc.
-      /^mark[A-Z]/,        // markAsRead, markAllAsRead, etc.
-      /^toggle[A-Z]/,      // toggleTheme, etc.
-      /^fetch[A-Z]/,       // fetchData, etc.
-      /^create[A-Z]/,      // createMeeting, etc.
-      /^update[A-Z]/,      // updateMeeting, etc.
-      /^delete[A-Z]/,      // deleteMeeting, etc.
-      /^get[A-Z]/,         // getMeetings, etc. (but not just "get")
-      /^set[A-Z]/,         // setState, etc. (but not just "set")
-      /^on[A-Z]/,          // onClick, onChange, etc.
+      /^handle[A-Z]/, // handleSubmit, handleSearch, etc.
+      /^mark[A-Z]/, // markAsRead, markAllAsRead, etc.
+      /^toggle[A-Z]/, // toggleTheme, etc.
+      /^fetch[A-Z]/, // fetchData, etc.
+      /^create[A-Z]/, // createMeeting, etc.
+      /^update[A-Z]/, // updateMeeting, etc.
+      /^delete[A-Z]/, // deleteMeeting, etc.
+      /^get[A-Z]/, // getMeetings, etc. (but not just "get")
+      /^set[A-Z]/, // setState, etc. (but not just "set")
+      /^on[A-Z]/, // onClick, onChange, etc.
     ];
-    
+
     for (const prefix of meaningfulPrefixes) {
       if (prefix.test(name)) {
         return true;
       }
     }
-    
+
     // Include functions with descriptive camelCase names (at least 6 characters)
     // This filters out generic short names but allows meaningful ones
     if (/^[a-z][a-zA-Z0-9]{5,}$/.test(name)) {
       return true;
     }
-    
+
     // Exclude everything else (too generic, too short, or weird)
     return false;
   };
 
   // Filter functions based on meaningful filter
-  const filteredFunctions = showOnlyMeaningful
-    ? functions.filter(isMeaningfulFunction)
-    : functions;
+  const filteredFunctions = showOnlyMeaningful ? functions.filter(isMeaningfulFunction) : functions;
 
   // Sort functions (use filtered functions)
   const sortedFunctions = [...filteredFunctions].sort((a, b) => {
@@ -150,22 +147,50 @@ export function UsageStatsTable({
     onSelectFunctions(deadCodeKeys);
   };
 
+  const handleDeleteFunction = async (key: string) => {
+    setDeletingKeys((prev) => new Set(prev).add(key));
+
+    try {
+      const response = await fetch("/api/agent/trigger", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          projectId,
+          functions: [key],
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Failed to queue function for deletion");
+      }
+
+      // Show success feedback (could be improved with a toast notification)
+      console.log(`Successfully queued ${key} for deletion`);
+    } catch (error) {
+      console.error("Error queueing function for deletion:", error);
+      alert(error instanceof Error ? error.message : "Failed to queue function for deletion");
+    } finally {
+      setDeletingKeys((prev) => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+    }
+  };
+
   const SortIcon = ({ column }: { column: SortColumn }) => {
     if (sortColumn !== column) {
       return <ArrowUpDown className="ml-1 h-3 w-3 text-muted-foreground" />;
     }
-    return sortDirection === "asc" ? (
-      <ArrowUp className="ml-1 h-3 w-3" />
-    ) : (
-      <ArrowDown className="ml-1 h-3 w-3" />
-    );
+    return sortDirection === "asc" ? <ArrowUp className="ml-1 h-3 w-3" /> : <ArrowDown className="ml-1 h-3 w-3" />;
   };
 
   // Calculate stats based on filtered functions
   const deadCodeCount = filteredFunctions.filter((f) => f.totalCalls === 0).length;
-  const lowUsageCount = filteredFunctions.filter(
-    (f) => f.totalCalls > 0 && f.totalCalls < 10
-  ).length;
+  const lowUsageCount = filteredFunctions.filter((f) => f.totalCalls > 0 && f.totalCalls < 10).length;
   const activeCount = filteredFunctions.filter((f) => f.totalCalls >= 10).length;
   const totalFiltered = filteredFunctions.length;
   const totalUnfiltered = functions.length;
@@ -179,9 +204,7 @@ export function UsageStatsTable({
             <span className="text-2xl">🔴</span>
             <div>
               <div className="text-sm text-muted-foreground">Dead Code</div>
-              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                {deadCodeCount}
-              </div>
+              <div className="text-2xl font-bold text-red-600 dark:text-red-400">{deadCodeCount}</div>
             </div>
           </div>
         </div>
@@ -191,9 +214,7 @@ export function UsageStatsTable({
             <span className="text-2xl">🟡</span>
             <div>
               <div className="text-sm text-muted-foreground">Low Usage ({"<"}10)</div>
-              <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                {lowUsageCount}
-              </div>
+              <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{lowUsageCount}</div>
             </div>
           </div>
         </div>
@@ -203,9 +224,7 @@ export function UsageStatsTable({
             <span className="text-2xl">🟢</span>
             <div>
               <div className="text-sm text-muted-foreground">Active (≥10)</div>
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {activeCount}
-              </div>
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">{activeCount}</div>
             </div>
           </div>
         </div>
@@ -255,12 +274,8 @@ export function UsageStatsTable({
           <table className="w-full">
             <thead className="bg-muted/50 border-b border-border">
               <tr>
-                <th className="text-left py-3 px-4 text-sm font-semibold w-8">
-                  {/* Checkbox column */}
-                </th>
-                <th className="text-left py-3 px-4 text-sm font-semibold w-8">
-                  {/* Icon column */}
-                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold w-8">{/* Checkbox column */}</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold w-8">{/* Icon column */}</th>
                 <th
                   className="text-left py-3 px-4 text-sm font-semibold cursor-pointer hover:bg-muted/70 transition-colors"
                   onClick={() => handleSort("file")}
@@ -307,10 +322,9 @@ export function UsageStatsTable({
                   </div>
                 </th>
                 <th className="text-left py-3 px-4 text-sm font-semibold w-32">
-                  <div className="flex items-center">
-                    Contributors
-                  </div>
+                  <div className="flex items-center">Contributors</div>
                 </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold w-24">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -344,9 +358,7 @@ export function UsageStatsTable({
                       </div>
                     </td>
                     <td className="py-3 px-4 text-sm font-mono">{func.name}</td>
-                    <td className="py-3 px-4 text-sm text-muted-foreground">
-                      {func.line}
-                    </td>
+                    <td className="py-3 px-4 text-sm text-muted-foreground">{func.line}</td>
                     <td className="py-3 px-4">
                       <span
                         className={cn(
@@ -358,7 +370,9 @@ export function UsageStatsTable({
                       </span>
                     </td>
                     <td className="py-3 px-4 text-sm text-muted-foreground">
-                      {func.lastSeen > 0 ? formatTimestamp(func.lastSeen) : (
+                      {func.lastSeen > 0 ? (
+                        formatTimestamp(func.lastSeen)
+                      ) : (
                         <span className="text-muted-foreground/50">Never</span>
                       )}
                     </td>
@@ -366,23 +380,16 @@ export function UsageStatsTable({
                       {func.contributors && func.contributors.length > 0 ? (
                         <div className="flex items-center gap-2 group relative">
                           <Users className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm text-muted-foreground cursor-help">
-                            {func.contributors.length}
-                          </span>
+                          <span className="text-sm text-muted-foreground cursor-help">{func.contributors.length}</span>
                           <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block z-50 pointer-events-none">
                             <div className="bg-popover border border-border rounded-lg shadow-xl p-3 min-w-[200px] max-w-[300px]">
                               <div className="text-xs font-semibold mb-2 text-foreground">Contributors:</div>
                               <div className="space-y-1.5">
                                 {func.contributors.map((contributor, idx) => (
-                                  <div
-                                    key={idx}
-                                    className="text-xs text-muted-foreground"
-                                  >
+                                  <div key={idx} className="text-xs text-muted-foreground">
                                     {contributor.name}
                                     {contributor.email && (
-                                      <span className="text-muted-foreground/70 block">
-                                        {contributor.email}
-                                      </span>
+                                      <span className="text-muted-foreground/70 block">{contributor.email}</span>
                                     )}
                                   </div>
                                 ))}
@@ -394,6 +401,21 @@ export function UsageStatsTable({
                         <span className="text-sm text-muted-foreground/50">—</span>
                       )}
                     </td>
+                    <td className="py-3 px-4">
+                      <button
+                        onClick={() => handleDeleteFunction(key)}
+                        disabled={deletingKeys.has(key)}
+                        className={cn(
+                          "p-2 rounded-md transition-colors",
+                          "hover:bg-red-100 dark:hover:bg-red-950/30",
+                          "text-red-600 dark:text-red-400",
+                          "disabled:opacity-50 disabled:cursor-not-allowed"
+                        )}
+                        title="Queue for deletion"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -404,4 +426,3 @@ export function UsageStatsTable({
     </div>
   );
 }
-

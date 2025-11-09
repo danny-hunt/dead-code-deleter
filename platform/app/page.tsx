@@ -63,9 +63,7 @@ export default function Home() {
   const fetchFunctions = async (projectId: string) => {
     setIsLoadingFunctions(true);
     try {
-      const response = await fetch(
-        `/api/projects/${projectId}?sort=totalCalls&order=asc`
-      );
+      const response = await fetch(`/api/projects/${projectId}?sort=totalCalls&order=asc`);
       if (!response.ok) {
         throw new Error("Failed to fetch project details");
       }
@@ -74,9 +72,7 @@ export default function Home() {
       setError(null);
     } catch (err) {
       console.error("Error fetching functions:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to load project details"
-      );
+      setError(err instanceof Error ? err.message : "Failed to load project details");
     } finally {
       setIsLoadingFunctions(false);
     }
@@ -111,23 +107,17 @@ export default function Home() {
               <Code2 className="h-8 w-8" />
               Dead Code Platform
             </h1>
-            <p className="text-muted-foreground">
-              Monitor and remove dead code from your applications
-            </p>
+            <p className="text-muted-foreground">Monitor and remove dead code from your applications</p>
           </div>
 
           <Card>
             <CardHeader>
               <CardTitle>No Projects Yet</CardTitle>
-              <CardDescription>
-                Get started by instrumenting your first application
-              </CardDescription>
+              <CardDescription>Get started by instrumenting your first application</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  To start monitoring your codebase:
-                </p>
+                <p className="text-sm text-muted-foreground">To start monitoring your codebase:</p>
                 <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
                   <li>
                     Install the instrumentation library:
@@ -138,10 +128,10 @@ export default function Home() {
                   <li>
                     Add instrumentation to your Next.js config:
                     <pre className="mt-2 p-3 bg-muted rounded text-xs overflow-x-auto">
-{`const withInstrumentation = require('@dead-code-deleter/instrument/next');
+                      {`const withInstrumentation = require('@dead-code-deleter/instrument/next');
 
 module.exports = withInstrumentation({
-  platformUrl: '${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3001'}/api/usage',
+  platformUrl: '${typeof window !== "undefined" ? window.location.origin : "http://localhost:3001"}/api/usage',
   projectId: 'my-app',
 })(nextConfig);`}
                     </pre>
@@ -173,9 +163,7 @@ module.exports = withInstrumentation({
             <Code2 className="h-8 w-8" />
             Dead Code Platform
           </h1>
-          <p className="text-muted-foreground">
-            Monitor and remove dead code from your applications
-          </p>
+          <p className="text-muted-foreground">Monitor and remove dead code from your applications</p>
         </div>
 
         {/* Error Alert */}
@@ -183,12 +171,8 @@ module.exports = withInstrumentation({
           <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
             <div>
-              <div className="font-semibold text-red-800 dark:text-red-200">
-                Error
-              </div>
-              <div className="text-sm text-red-700 dark:text-red-300">
-                {error}
-              </div>
+              <div className="font-semibold text-red-800 dark:text-red-200">Error</div>
+              <div className="text-sm text-red-700 dark:text-red-300">{error}</div>
             </div>
           </div>
         )}
@@ -220,14 +204,14 @@ module.exports = withInstrumentation({
               <CardHeader>
                 <CardTitle>Function Usage Statistics</CardTitle>
                 <CardDescription>
-                  All functions tracked in this project. Functions with 0 calls are
-                  candidates for removal.
+                  All functions tracked in this project. Functions with 0 calls are candidates for removal.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <UsageStatsTable
                   functions={functions}
                   onSelectFunctions={setSelectedFunctions}
+                  projectId={selectedProjectId}
                 />
               </CardContent>
             </Card>
@@ -237,15 +221,11 @@ module.exports = withInstrumentation({
               <CardHeader>
                 <CardTitle>Remove Dead Code</CardTitle>
                 <CardDescription>
-                  Trigger an automated process to remove selected functions from your
-                  codebase
+                  Trigger an automated process to remove selected functions from your codebase
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <AgentTrigger
-                  projectId={selectedProjectId}
-                  selectedFunctions={selectedFunctions}
-                />
+                <AgentTrigger projectId={selectedProjectId} selectedFunctions={selectedFunctions} />
               </CardContent>
             </Card>
           </div>
@@ -254,4 +234,3 @@ module.exports = withInstrumentation({
     </div>
   );
 }
-
