@@ -102,27 +102,9 @@ export default function withInstrumentation(
         config.resolve.alias["@dead-code-deleter/instrument"] = runtimePath;
         config.resolve.alias["@dead-code-deleter/instrument/runtime"] = runtimePath;
 
-        // Inject the runtime module into all entries to ensure it's loaded
-        const originalEntry = config.entry;
-        config.entry = async () => {
-          const entries = typeof originalEntry === "function" ? await originalEntry() : originalEntry;
-
-          // For server-side entries, inject the runtime
-          if (options.isServer && typeof entries === "object") {
-            for (const key in entries) {
-              if (Array.isArray(entries[key])) {
-                // Only inject if not already present
-                if (!entries[key].includes(runtimePath)) {
-                  entries[key].unshift(runtimePath);
-                }
-              } else if (typeof entries[key] === "string") {
-                entries[key] = [runtimePath, entries[key]];
-              }
-            }
-          }
-
-          return entries;
-        };
+        // Note: We don't inject the runtime into webpack entries here because
+        // it causes issues with Edge Runtime. Instead, the runtime should be
+        // imported via instrumentation.ts which properly checks the runtime type.
 
         return config;
       },
