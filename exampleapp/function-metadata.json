@@ -1,0 +1,1329 @@
+{
+  "projectId": "example-app",
+  "analyzedAt": 1762700004318,
+  "functions": [
+    {
+      "file": "app/api/analytics/route.ts",
+      "name": "transformAnalyticsData",
+      "line": 5,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/analytics/route.ts",
+      "name": "GET",
+      "line": 16,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/calendar/route.ts",
+      "name": "GET",
+      "line": 6,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/dashboard/recent/route.ts",
+      "name": "GET",
+      "line": 6,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/dashboard/stats/route.ts",
+      "name": "GET",
+      "line": 6,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/dashboard/trends/route.ts",
+      "name": "GET",
+      "line": 6,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/meetings/[id]/route.ts",
+      "name": "GET",
+      "line": 6,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/meetings/[id]/route.ts",
+      "name": "PATCH",
+      "line": 35,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/meetings/[id]/route.ts",
+      "name": "DELETE",
+      "line": 67,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/meetings/route.ts",
+      "name": "GET",
+      "line": 6,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/meetings/route.ts",
+      "name": "POST",
+      "line": 40,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/settings/route.ts",
+      "name": "GET",
+      "line": 6,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/settings/route.ts",
+      "name": "PATCH",
+      "line": 26,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/summaries/[id]/route.ts",
+      "name": "GET",
+      "line": 6,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/summaries/meeting/[meetingId]/route.ts",
+      "name": "GET",
+      "line": 6,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/summaries/route.ts",
+      "name": "GET",
+      "line": 6,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/api/summaries/route.ts",
+      "name": "POST",
+      "line": 26,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/layout.tsx",
+      "name": "RootLayout",
+      "line": 9,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/page.tsx",
+      "name": "Home",
+      "line": 13,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        },
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "app/page.tsx",
+      "name": "renderPage",
+      "line": 27,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/header.tsx",
+      "name": "Header",
+      "line": 10,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        },
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/header.tsx",
+      "name": "handleSearch",
+      "line": 14,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/header.tsx",
+      "name": "handleSettingsClick",
+      "line": 25,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/meeting-form-dialog.tsx",
+      "name": "MeetingFormDialog",
+      "line": 18,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/meeting-form-dialog.tsx",
+      "name": "handleSubmit",
+      "line": 58,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/meeting-trends.tsx",
+      "name": "MeetingTrends",
+      "line": 7,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/meeting-trends.tsx",
+      "name": "calculateReduction",
+      "line": 13,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/messages-dialog.tsx",
+      "name": "MessagesDialog",
+      "line": 58,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/messages-dialog.tsx",
+      "name": "formatTime",
+      "line": 61,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/notifications-popover.tsx",
+      "name": "NotificationsPopover",
+      "line": 54,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/notifications-popover.tsx",
+      "name": "formatTime",
+      "line": 60,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/notifications-popover.tsx",
+      "name": "getIcon",
+      "line": 76,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/notifications-popover.tsx",
+      "name": "markAsRead",
+      "line": 89,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/notifications-popover.tsx",
+      "name": "markAllAsRead",
+      "line": 93,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/analytics.tsx",
+      "name": "Analytics",
+      "line": 7,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/calendar.tsx",
+      "name": "Calendar",
+      "line": 9,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/calendar.tsx",
+      "name": "isToday",
+      "line": 42,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/calendar.tsx",
+      "name": "previousMonth",
+      "line": 47,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/calendar.tsx",
+      "name": "nextMonth",
+      "line": 51,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/dashboard.tsx",
+      "name": "Dashboard",
+      "line": 15,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        },
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/meetings.tsx",
+      "name": "Meetings",
+      "line": 28,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        },
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/meetings.tsx",
+      "name": "formatMeetingTime",
+      "line": 51,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/meetings.tsx",
+      "name": "formatDuration",
+      "line": 62,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/meetings.tsx",
+      "name": "handleDelete",
+      "line": 73,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/meetings.tsx",
+      "name": "handleCreateMeeting",
+      "line": 79,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/meetings.tsx",
+      "name": "handleUpdateMeeting",
+      "line": 83,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/meetings.tsx",
+      "name": "handleViewMeeting",
+      "line": 90,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/meetings.tsx",
+      "name": "handleEditMeeting",
+      "line": 94,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/settings.tsx",
+      "name": "Settings",
+      "line": 8,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/summaries.tsx",
+      "name": "Summaries",
+      "line": 8,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/summaries.tsx",
+      "name": "handleCopy",
+      "line": 11,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/pages/summaries.tsx",
+      "name": "handleExport",
+      "line": 20,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/recent-meetings.tsx",
+      "name": "RecentMeetings",
+      "line": 7,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/recent-meetings.tsx",
+      "name": "formatDuration",
+      "line": 10,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/schedule-free-day-dialog.tsx",
+      "name": "ScheduleFreeDayDialog",
+      "line": 17,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/schedule-free-day-dialog.tsx",
+      "name": "handleSubmit",
+      "line": 23,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/sidebar.tsx",
+      "name": "Sidebar",
+      "line": 11,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/sidebar.tsx",
+      "name": "MenuItem",
+      "line": 55,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/stat-card.tsx",
+      "name": "StatCard",
+      "line": 14,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/time-blocks-dialog.tsx",
+      "name": "TimeBlocksDialog",
+      "line": 15,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/time-blocks-dialog.tsx",
+      "name": "getMeetingsForDay",
+      "line": 24,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/time-blocks-dialog.tsx",
+      "name": "calculateTotalHours",
+      "line": 31,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/time-blocks-dialog.tsx",
+      "name": "getDayColor",
+      "line": 35,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/ui/button.tsx",
+      "name": "Button",
+      "line": 39,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/ui/card.tsx",
+      "name": "Card",
+      "line": 5,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/ui/card.tsx",
+      "name": "CardHeader",
+      "line": 18,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/ui/card.tsx",
+      "name": "CardTitle",
+      "line": 31,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/ui/card.tsx",
+      "name": "CardDescription",
+      "line": 41,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/ui/card.tsx",
+      "name": "CardAction",
+      "line": 51,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/ui/card.tsx",
+      "name": "CardContent",
+      "line": 64,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/ui/card.tsx",
+      "name": "CardFooter",
+      "line": 74,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/ui/dialog.tsx",
+      "name": "DialogHeader",
+      "line": 56,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/ui/dialog.tsx",
+      "name": "DialogFooter",
+      "line": 70,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "components/ui/input.tsx",
+      "name": "Input",
+      "line": 5,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "request",
+      "line": 21,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "getMeetings",
+      "line": 42,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        },
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "getMeeting",
+      "line": 58,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "createMeeting",
+      "line": 62,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "updateMeeting",
+      "line": 69,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "deleteMeeting",
+      "line": 76,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "getDashboardStats",
+      "line": 83,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "getMeetingTrends",
+      "line": 87,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "getRecentMeetings",
+      "line": 91,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "getAnalytics",
+      "line": 96,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "getCalendarEvents",
+      "line": 101,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "getSummaries",
+      "line": 111,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "getSummary",
+      "line": 115,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "getSummaryByMeetingId",
+      "line": 119,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "createSummary",
+      "line": 123,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "getSettings",
+      "line": 131,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/api-client.ts",
+      "name": "updateSettings",
+      "line": 135,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        },
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "useMeetings",
+      "line": 15,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "createMeeting",
+      "line": 36,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "updateMeeting",
+      "line": 44,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "deleteMeeting",
+      "line": 52,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "useDashboardStats",
+      "line": 71,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "fetchStats",
+      "line": 77,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "useMeetingTrends",
+      "line": 95,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "fetchTrends",
+      "line": 101,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "useRecentMeetings",
+      "line": 119,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "fetchRecent",
+      "line": 125,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "useAnalytics",
+      "line": 143,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "fetchAnalytics",
+      "line": 149,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "useCalendarEvents",
+      "line": 167,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "fetchEvents",
+      "line": 173,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "useSummaries",
+      "line": 191,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "createSummary",
+      "line": 212,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "useSettings",
+      "line": 223,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/hooks.ts",
+      "name": "updateSettings",
+      "line": 244,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/report-generator.ts",
+      "name": "generateWeeklyReport",
+      "line": 36,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/report-generator.ts",
+      "name": "exportReportToText",
+      "line": 110,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/report-generator.ts",
+      "name": "exportReportToJSON",
+      "line": 146,
+      "contributors": [
+        {
+          "name": "Rosh Beed",
+          "email": ""
+        }
+      ]
+    },
+    {
+      "file": "lib/utils.ts",
+      "name": "cn",
+      "line": 4,
+      "contributors": [
+        {
+          "name": "Danny Hunt",
+          "email": ""
+        }
+      ]
+    }
+  ]
+}

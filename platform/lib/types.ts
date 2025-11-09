@@ -31,6 +31,24 @@ export interface UsagePayload {
 // ============================================================================
 
 /**
+ * Contributor information from git blame
+ */
+export interface Contributor {
+  name: string;
+  email: string;
+}
+
+/**
+ * Function metadata from static analysis
+ */
+export interface FunctionMetadata {
+  file: string;
+  name: string;
+  line: number;
+  contributors: Contributor[];
+}
+
+/**
  * Stored function with aggregated usage data
  */
 export interface StoredFunction {
@@ -40,6 +58,7 @@ export interface StoredFunction {
   totalCalls: number;
   lastSeen: number;
   firstSeen: number;
+  contributors?: Contributor[];
 }
 
 /**
@@ -108,6 +127,33 @@ export interface AgentTriggerResponse {
   status: string;
   message: string;
   jobId?: string;
+}
+
+/**
+ * Function metadata file from static analysis
+ */
+export interface FunctionMetadataFile {
+  projectId: string;
+  analyzedAt: number;
+  functions: FunctionMetadata[];
+}
+
+/**
+ * Response from /api/projects/[projectId]/metadata (POST)
+ */
+export interface MetadataUploadResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
+
+/**
+ * Response from /api/projects/[projectId]/metadata (GET)
+ */
+export interface MetadataResponse {
+  projectId: string;
+  analyzedAt: number;
+  functions: FunctionMetadata[];
 }
 
 // ============================================================================

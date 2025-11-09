@@ -75,6 +75,9 @@ async function uploadUsageData(): Promise<void> {
   };
 
   debug(`Uploading ${functions.length} function usage records`);
+  debug(`Target URL: ${config.platformUrl}`);
+  debug(`Project ID: ${config.projectId}`);
+  debug(`Sample functions:`, functions.slice(0, 3));
 
   try {
     const response = await fetch(config.platformUrl, {
@@ -86,12 +89,27 @@ async function uploadUsageData(): Promise<void> {
     });
 
     if (!response.ok) {
-      console.error("[dead-code-deleter] Failed to upload usage data:", response.statusText);
+      const errorText = await response.text().catch(() => "Unable to read error response");
+      console.error(
+        `[dead-code-deleter] Failed to upload usage data:`,
+        `\n  Status: ${response.status} ${response.statusText}`,
+        `\n  URL: ${config.platformUrl}`,
+        `\n  Project ID: ${config.projectId}`,
+        `\n  Function count: ${functions.length}`,
+        `\n  Response: ${errorText}`
+      );
     } else {
       debug("Successfully uploaded usage data");
     }
   } catch (error) {
-    console.error("[dead-code-deleter] Error uploading usage data:", error);
+    console.error(
+      `[dead-code-deleter] Error uploading usage data:`,
+      `\n  URL: ${config.platformUrl}`,
+      `\n  Project ID: ${config.projectId}`,
+      `\n  Function count: ${functions.length}`,
+      `\n  Error:`,
+      error
+    );
   }
 }
 
@@ -116,8 +134,9 @@ function initialize(): void {
     });
   }, config.uploadInterval);
 
-  // Ensure we upload on process exit (Node.js only)
-  if (typeof process !== "undefined" && process.on) {
+  // Ensure we upload on process exit (Node.js only, not Edge Runtime)
+  const isEdgeRuntime = typeof process !== "undefined" && process.env?.NEXT_RUNTIME === "edge";
+  if (typeof process !== "undefined" && !isEdgeRuntime) {
     const cleanup = () => {
       if (uploadTimer) {
         clearInterval(uploadTimer);
@@ -128,9 +147,10 @@ function initialize(): void {
       debug("Cleaning up instrumentation");
     };
 
-    process.on("beforeExit", cleanup);
-    process.on("SIGINT", cleanup);
-    process.on("SIGTERM", cleanup);
+    // TODO: COMMENTING THESE OUT WAS A HACK TO GET THE EXAMPLE WORKING
+    // process.on("beforeExit", cleanup);
+    // process.on("SIGINT", cleanup);
+    // process.on("SIGTERM", cleanup);
   }
 
   // For browser environments, try to upload before unload
@@ -182,7 +202,3 @@ export function getStats() {
     config,
   };
 }
-
-
-
-
