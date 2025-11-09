@@ -1,0 +1,21 @@
+# Development
+.env.local
+.env*.local
+
+# Testing
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Misc
+.DS_Store
+*.log
+

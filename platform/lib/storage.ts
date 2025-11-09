@@ -14,7 +14,7 @@ const LOCAL_STORAGE_DIR = path.join(process.cwd(), ".local-storage");
 /**
  * Check if we should use local storage (development mode)
  */
-function useLocalStorage(): boolean {
+function shouldUseLocalStorage(): boolean {
   return !process.env.BLOB_READ_WRITE_TOKEN;
 }
 
@@ -58,8 +58,9 @@ async function writeLocalFile(filePath: string, content: string): Promise<void> 
 }
 
 /**
- * List files in local storage
+ * List files in local storage (currently unused, but kept for future debugging)
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function listLocalFiles(prefix: string): Promise<string[]> {
   try {
     await ensureLocalStorageDir();
@@ -80,7 +81,7 @@ async function listLocalFiles(prefix: string): Promise<string[]> {
 export async function getProjectIndex(): Promise<ProjectIndex> {
   try {
     // Use local storage if no token configured
-    if (useLocalStorage()) {
+    if (shouldUseLocalStorage()) {
       console.log("[Local Storage] Reading project index");
       const content = await readLocalFile(PROJECT_INDEX_PATH);
       if (!content) {
@@ -154,7 +155,7 @@ export async function updateProjectIndex(projectId: string, updates: Partial<Pro
   const content = JSON.stringify(index, null, 2);
 
   // Use local storage if no token configured
-  if (useLocalStorage()) {
+  if (shouldUseLocalStorage()) {
     console.log("[Local Storage] Writing project index");
     await writeLocalFile(PROJECT_INDEX_PATH, content);
     return;
@@ -181,7 +182,7 @@ export async function getProjectUsage(projectId: string): Promise<ProjectUsage |
     const filePath = getProjectUsagePath(projectId);
 
     // Use local storage if no token configured
-    if (useLocalStorage()) {
+    if (shouldUseLocalStorage()) {
       console.log(`[Local Storage] Reading usage data for ${projectId}`);
       const content = await readLocalFile(filePath);
       if (!content) {
@@ -231,7 +232,7 @@ async function saveProjectUsage(projectId: string, usage: ProjectUsage): Promise
   const content = JSON.stringify(usage, null, 2);
 
   // Use local storage if no token configured
-  if (useLocalStorage()) {
+  if (shouldUseLocalStorage()) {
     console.log(`[Local Storage] Writing usage data for ${projectId}`);
     await writeLocalFile(filePath, content);
     return;
