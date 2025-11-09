@@ -1,5 +1,5 @@
 import { put, list } from "@vercel/blob";
-import { ProjectIndex, ProjectUsage, ProjectSummary, UsagePayload, StoredFunction } from "./types";
+import { ProjectIndex, ProjectUsage, ProjectSummary, UsagePayload, StoredFunction, FunctionMetadataFile } from "./types";
 import { getFunctionKey } from "./utils";
 import { promises as fs } from "fs";
 import path from "path";
@@ -7,6 +7,7 @@ import path from "path";
 // Blob paths
 const PROJECT_INDEX_PATH = "projects/index.json";
 const getProjectUsagePath = (projectId: string) => `projects/${projectId}/usage.json`;
+const getProjectMetadataPath = (projectId: string) => `projects/${projectId}/metadata.json`;
 
 // Check if we're running in a serverless environment (Vercel, AWS Lambda, etc.)
 function isServerlessEnvironment(): boolean {
@@ -277,6 +278,36 @@ async function saveProjectUsage(projectId: string, usage: ProjectUsage): Promise
 }
 
 /**
+ * Normalize file path to match metadata format (relative paths)
+ */
+function normalizeFilePathForStorage(filePath: string): string {
+  if (!filePath) return "";
+  
+  let normalized = filePath.replace(/\\/g, "/");
+  
+  // Remove absolute path prefixes - find the last occurrence of project directories
+  const projectDirs = ["app", "components", "lib", "src", "pages", "utils"];
+  for (const dir of projectDirs) {
+    const pattern = new RegExp(`.*/${dir}/(.*)$`);
+    const match = normalized.match(pattern);
+    if (match) {
+      return `${dir}/${match[1]}`;
+    }
+  }
+  
+  // If path starts with exampleapp/, remove that prefix
+  if (normalized.includes("exampleapp/")) {
+    const exampleappIndex = normalized.indexOf("exampleapp/");
+    normalized = normalized.substring(exampleappIndex + "exampleapp/".length);
+  }
+  
+  // Remove leading slashes
+  normalized = normalized.replace(/^\/+/, "");
+  
+  return normalized;
+}
+
+/**
  * Update project usage with new data from instrumentation
  * This aggregates incoming call counts with existing totals
  */
@@ -294,9 +325,17 @@ export async function updateProjectUsage(payload: UsagePayload): Promise<void> {
     };
   }
 
+  // Store original function count for logging
+  const originalFunctionCount = Object.keys(usage.functions).length;
+  let updatedCount = 0;
+  let newCount = 0;
+
   // Aggregate function call data
+  // Normalize file paths to match metadata format for consistent matching
   for (const func of functions) {
-    const key = getFunctionKey(func.file, func.name, func.line);
+    // Normalize the file path for storage (to match metadata format)
+    const normalizedFile = normalizeFilePathForStorage(func.file);
+    const key = getFunctionKey(normalizedFile, func.name, func.line);
 
     if (usage.functions[key]) {
       // Update existing function
@@ -304,10 +343,16 @@ export async function updateProjectUsage(payload: UsagePayload): Promise<void> {
       if (func.callCount > 0) {
         usage.functions[key].lastSeen = timestamp;
       }
+      updatedCount++;
+      
+      // Log if we detect a potential issue (calls going backwards)
+      if (func.callCount < 0) {
+        console.warn(`[Usage Update] Negative call count for ${key}: ${func.callCount}`);
+      }
     } else {
-      // New function
+      // New function - store with normalized path
       const newFunc: StoredFunction = {
-        file: func.file,
+        file: normalizedFile, // Store normalized path to match metadata
         name: func.name,
         line: func.line,
         totalCalls: func.callCount,
@@ -315,10 +360,15 @@ export async function updateProjectUsage(payload: UsagePayload): Promise<void> {
         firstSeen: timestamp,
       };
       usage.functions[key] = newFunc;
+      newCount++;
     }
   }
 
   usage.lastUpdated = timestamp;
+
+  // Log update summary
+  const finalFunctionCount = Object.keys(usage.functions).length;
+  console.log(`[Usage Update] Project: ${projectId}, Functions: ${originalFunctionCount} -> ${finalFunctionCount} (${updatedCount} updated, ${newCount} new), Total incoming: ${functions.length}`);
 
   // Save updated usage data
   await saveProjectUsage(projectId, usage);
@@ -333,6 +383,110 @@ export async function updateProjectUsage(payload: UsagePayload): Promise<void> {
     totalFunctions,
     deadCodeCount,
   });
+}
+
+/**
+ * Save project metadata from static analysis
+ */
+export async function saveProjectMetadata(metadata: FunctionMetadataFile): Promise<void> {
+  const filePath = getProjectMetadataPath(metadata.projectId);
+  const content = JSON.stringify(metadata, null, 2);
+
+  // Use local storage if no token configured
+  if (useLocalStorage()) {
+    console.log(`[Local Storage] Writing metadata for ${metadata.projectId}`);
+    await writeLocalFile(filePath, content);
+    return;
+  }
+
+  // Save to Vercel Blob
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!token) {
+    throw new Error("BLOB_READ_WRITE_TOKEN not configured");
+  }
+
+  await put(filePath, content, {
+    token,
+    access: "public",
+    contentType: "application/json",
+  });
+}
+
+/**
+ * Get project metadata from static analysis
+ */
+export async function getProjectMetadata(projectId: string): Promise<FunctionMetadataFile | null> {
+  try {
+    const filePath = getProjectMetadataPath(projectId);
+
+    // Use local storage if no token configured
+    if (useLocalStorage()) {
+      console.log(`[Local Storage] Reading metadata for ${projectId}`);
+      const content = await readLocalFile(filePath);
+      if (!content) {
+        // In development, try to read directly from exampleapp directory as fallback
+        try {
+          // Try multiple possible paths relative to platform directory
+          const platformDir = process.cwd();
+          const possiblePaths = [
+            path.join(platformDir, "..", "exampleapp", "function-metadata.json"),
+            path.resolve(platformDir, "..", "exampleapp", "function-metadata.json"),
+            // Also try absolute path from workspace root
+            path.resolve(platformDir, "..", "..", "exampleapp", "function-metadata.json"),
+          ];
+          
+          for (const exampleappPath of possiblePaths) {
+            try {
+              const fallbackContent = await fs.readFile(exampleappPath, "utf-8");
+              const metadata = JSON.parse(fallbackContent) as FunctionMetadataFile;
+              if (metadata.projectId === projectId) {
+                console.log(`[Local Storage] Found metadata in exampleapp directory (fallback): ${exampleappPath}`);
+                return metadata;
+              }
+            } catch (pathError) {
+              // Try next path
+              continue;
+            }
+          }
+        } catch (fallbackError) {
+          // Ignore fallback errors
+        }
+        return null;
+      }
+      return JSON.parse(content) as FunctionMetadataFile;
+    }
+
+    // Use Vercel Blob Storage
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    if (!token) {
+      throw new Error("BLOB_READ_WRITE_TOKEN not configured");
+    }
+
+    // List blobs to find the metadata file
+    const { blobs } = await list({
+      token,
+      prefix: `projects/${projectId}/`,
+    });
+
+    const metadataBlob = blobs.find((b) => b.pathname === filePath);
+
+    if (!metadataBlob) {
+      // No metadata exists yet
+      return null;
+    }
+
+    // Fetch the metadata
+    const response = await fetch(metadataBlob.url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch project metadata: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data as FunctionMetadataFile;
+  } catch (error) {
+    console.error(`Error fetching project metadata for ${projectId}:`, error);
+    return null;
+  }
 }
 
 /**

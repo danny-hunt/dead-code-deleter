@@ -1,0 +1,14 @@
+{
+  "name": "dead-code-deleter",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "analyze": "tsx scripts/analyze-functions.ts",
+    "upload-metadata": "tsx scripts/upload-metadata.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.0.0"
+  }
+}
