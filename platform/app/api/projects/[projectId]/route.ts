@@ -114,23 +114,30 @@ export async function GET(request: NextRequest, context: RouteContext) {
     };
 
     // Create a map of usage data by function key for quick lookup
-    // Use normalized paths for matching, but also try multiple normalization strategies
+    // Normalize paths for matching (handles both old absolute paths and new normalized paths)
     const usageMap = new Map<string, StoredFunction>();
-    const usageMapByOriginal = new Map<string, StoredFunction>(); // Also store by original key for debugging
     
     if (usage) {
       for (const func of Object.values(usage.functions)) {
+        // Normalize the file path (handles both old absolute paths and already-normalized paths)
         const normalizedFile = normalizePath(func.file);
         const normalizedKey = getFunctionKey(normalizedFile, func.name, func.line);
-        const originalKey = getFunctionKey(func.file, func.name, func.line);
         
-        usageMap.set(normalizedKey, func);
-        usageMapByOriginal.set(originalKey, func);
+        // Update the function's file path to normalized version for consistency
+        const normalizedFunc: StoredFunction = {
+          ...func,
+          file: normalizedFile,
+        };
         
-        // Debug: log first few to see what we're getting
-        if (usageMap.size <= 3) {
-          console.log(`[Path Matching] Usage: "${func.file}" -> normalized: "${normalizedFile}"`);
+        // If we already have this key, merge the call counts (in case of duplicates from migration)
+        if (usageMap.has(normalizedKey)) {
+          const existing = usageMap.get(normalizedKey)!;
+          normalizedFunc.totalCalls = Math.max(existing.totalCalls, func.totalCalls);
+          normalizedFunc.lastSeen = Math.max(existing.lastSeen || 0, func.lastSeen || 0);
+          normalizedFunc.firstSeen = Math.min(existing.firstSeen || Infinity, func.firstSeen || Infinity);
         }
+        
+        usageMap.set(normalizedKey, normalizedFunc);
       }
       console.log(`[Path Matching] Total usage functions: ${usageMap.size}`);
     }

@@ -252,6 +252,36 @@ async function saveProjectUsage(projectId: string, usage: ProjectUsage): Promise
 }
 
 /**
+ * Normalize file path to match metadata format (relative paths)
+ */
+function normalizeFilePathForStorage(filePath: string): string {
+  if (!filePath) return "";
+  
+  let normalized = filePath.replace(/\\/g, "/");
+  
+  // Remove absolute path prefixes - find the last occurrence of project directories
+  const projectDirs = ["app", "components", "lib", "src", "pages", "utils"];
+  for (const dir of projectDirs) {
+    const pattern = new RegExp(`.*/${dir}/(.*)$`);
+    const match = normalized.match(pattern);
+    if (match) {
+      return `${dir}/${match[1]}`;
+    }
+  }
+  
+  // If path starts with exampleapp/, remove that prefix
+  if (normalized.includes("exampleapp/")) {
+    const exampleappIndex = normalized.indexOf("exampleapp/");
+    normalized = normalized.substring(exampleappIndex + "exampleapp/".length);
+  }
+  
+  // Remove leading slashes
+  normalized = normalized.replace(/^\/+/, "");
+  
+  return normalized;
+}
+
+/**
  * Update project usage with new data from instrumentation
  * This aggregates incoming call counts with existing totals
  */
@@ -269,9 +299,17 @@ export async function updateProjectUsage(payload: UsagePayload): Promise<void> {
     };
   }
 
+  // Store original function count for logging
+  const originalFunctionCount = Object.keys(usage.functions).length;
+  let updatedCount = 0;
+  let newCount = 0;
+
   // Aggregate function call data
+  // Normalize file paths to match metadata format for consistent matching
   for (const func of functions) {
-    const key = getFunctionKey(func.file, func.name, func.line);
+    // Normalize the file path for storage (to match metadata format)
+    const normalizedFile = normalizeFilePathForStorage(func.file);
+    const key = getFunctionKey(normalizedFile, func.name, func.line);
 
     if (usage.functions[key]) {
       // Update existing function
@@ -279,10 +317,16 @@ export async function updateProjectUsage(payload: UsagePayload): Promise<void> {
       if (func.callCount > 0) {
         usage.functions[key].lastSeen = timestamp;
       }
+      updatedCount++;
+      
+      // Log if we detect a potential issue (calls going backwards)
+      if (func.callCount < 0) {
+        console.warn(`[Usage Update] Negative call count for ${key}: ${func.callCount}`);
+      }
     } else {
-      // New function
+      // New function - store with normalized path
       const newFunc: StoredFunction = {
-        file: func.file,
+        file: normalizedFile, // Store normalized path to match metadata
         name: func.name,
         line: func.line,
         totalCalls: func.callCount,
@@ -290,10 +334,15 @@ export async function updateProjectUsage(payload: UsagePayload): Promise<void> {
         firstSeen: timestamp,
       };
       usage.functions[key] = newFunc;
+      newCount++;
     }
   }
 
   usage.lastUpdated = timestamp;
+
+  // Log update summary
+  const finalFunctionCount = Object.keys(usage.functions).length;
+  console.log(`[Usage Update] Project: ${projectId}, Functions: ${originalFunctionCount} -> ${finalFunctionCount} (${updatedCount} updated, ${newCount} new), Total incoming: ${functions.length}`);
 
   // Save updated usage data
   await saveProjectUsage(projectId, usage);
