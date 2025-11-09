@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Header from "@/components/header"
 import Sidebar from "@/components/sidebar"
 import Dashboard from "@/components/pages/dashboard"
@@ -12,6 +12,17 @@ import Settings from "@/components/pages/settings"
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState("dashboard")
+
+  useEffect(() => {
+    // Handle URL parameters for navigation
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search)
+      const page = params.get("page")
+      if (page && ["dashboard", "meetings", "analytics", "calendar", "summaries", "settings"].includes(page)) {
+        setCurrentPage(page)
+      }
+    }
+  }, [])
 
   const renderPage = () => {
     switch (currentPage) {

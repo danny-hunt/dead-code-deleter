@@ -1,15 +1,22 @@
 "use client";
 
+import { useState } from "react";
 import { TrendingDown, Users, Clock, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import StatCard from "@/components/stat-card";
 import RecentMeetings from "@/components/recent-meetings";
 import MeetingTrends from "@/components/meeting-trends";
-import { useDashboardStats } from "@/lib/hooks";
+import { useDashboardStats, useMeetings } from "@/lib/hooks";
+import ScheduleFreeDayDialog from "@/components/schedule-free-day-dialog";
+import TimeBlocksDialog from "@/components/time-blocks-dialog";
+import { generateWeeklyReport, exportReportToText, exportReportToJSON } from "@/lib/report-generator";
 
 export default function Dashboard() {
   const { stats, loading, error } = useDashboardStats();
+  const { meetings } = useMeetings();
+  const [freeDayDialogOpen, setFreeDayDialogOpen] = useState(false);
+  const [timeBlocksDialogOpen, setTimeBlocksDialogOpen] = useState(false);
 
   return (
     <div className="p-8 space-y-8">
@@ -68,13 +75,35 @@ export default function Dashboard() {
           <Card className="p-6">
             <h3 className="font-semibold mb-4">Quick Actions</h3>
             <div className="space-y-2">
-              <Button className="w-full justify-start bg-transparent" variant="outline">
+              <Button 
+                className="w-full justify-start bg-transparent" 
+                variant="outline"
+                onClick={() => setFreeDayDialogOpen(true)}
+              >
                 Schedule Meeting-Free Day
               </Button>
-              <Button className="w-full justify-start bg-transparent" variant="outline">
+              <Button 
+                className="w-full justify-start bg-transparent" 
+                variant="outline"
+                onClick={() => setTimeBlocksDialogOpen(true)}
+              >
                 Review Time Blocks
               </Button>
-              <Button className="w-full justify-start bg-transparent" variant="outline">
+              <Button 
+                className="w-full justify-start bg-transparent" 
+                variant="outline"
+                onClick={() => {
+                  const report = generateWeeklyReport(meetings);
+                  const textReport = exportReportToText(report);
+                  const blob = new Blob([textReport], { type: "text/plain" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `weekly-meeting-report-${report.weekStart.replace(/,/g, "")}-${report.weekEnd.replace(/,/g, "")}.txt`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+              >
                 Export Weekly Report
               </Button>
             </div>
@@ -90,6 +119,10 @@ export default function Dashboard() {
 
       {/* Recent Meetings */}
       <RecentMeetings />
+
+      {/* Dialogs */}
+      <ScheduleFreeDayDialog open={freeDayDialogOpen} onOpenChange={setFreeDayDialogOpen} />
+      <TimeBlocksDialog open={timeBlocksDialogOpen} onOpenChange={setTimeBlocksDialogOpen} />
     </div>
   );
 }

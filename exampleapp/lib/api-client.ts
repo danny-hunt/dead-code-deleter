@@ -1,6 +1,6 @@
 // API Client utilities for making requests to backend
 
-import { ApiResponse } from "./types";
+import { ApiResponse, Meeting, DashboardStats, MeetingTrend, AnalyticsData, CalendarEvent, MeetingSummary, UserSettings } from "./types";
 
 class ApiClient {
   private baseUrl: string;
@@ -30,7 +30,7 @@ class ApiClient {
   }
 
   // Meetings
-  async getMeetings(params?: { q?: string; status?: string; startDate?: string; endDate?: string }) {
+  async getMeetings(params?: { q?: string; status?: string; startDate?: string; endDate?: string }): Promise<ApiResponse<Meeting[]>> {
     const searchParams = new URLSearchParams();
     if (params?.q) searchParams.append("q", params.q);
     if (params?.status) searchParams.append("status", params.status);
@@ -38,88 +38,88 @@ class ApiClient {
     if (params?.endDate) searchParams.append("endDate", params.endDate);
 
     const query = searchParams.toString();
-    return this.request(`/meetings${query ? `?${query}` : ""}`);
+    return this.request<Meeting[]>(`/meetings${query ? `?${query}` : ""}`);
   }
 
-  async getMeeting(id: string) {
-    return this.request(`/meetings/${id}`);
+  async getMeeting(id: string): Promise<ApiResponse<Meeting>> {
+    return this.request<Meeting>(`/meetings/${id}`);
   }
 
-  async createMeeting(data: any) {
-    return this.request(`/meetings`, {
+  async createMeeting(data: any): Promise<ApiResponse<Meeting>> {
+    return this.request<Meeting>(`/meetings`, {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  async updateMeeting(id: string, data: any) {
-    return this.request(`/meetings/${id}`, {
+  async updateMeeting(id: string, data: any): Promise<ApiResponse<Meeting>> {
+    return this.request<Meeting>(`/meetings/${id}`, {
       method: "PATCH",
       body: JSON.stringify(data),
     });
   }
 
-  async deleteMeeting(id: string) {
-    return this.request(`/meetings/${id}`, {
+  async deleteMeeting(id: string): Promise<ApiResponse<void>> {
+    return this.request<void>(`/meetings/${id}`, {
       method: "DELETE",
     });
   }
 
   // Dashboard
-  async getDashboardStats() {
-    return this.request(`/dashboard/stats`);
+  async getDashboardStats(): Promise<ApiResponse<DashboardStats>> {
+    return this.request<DashboardStats>(`/dashboard/stats`);
   }
 
-  async getMeetingTrends() {
-    return this.request(`/dashboard/trends`);
+  async getMeetingTrends(): Promise<ApiResponse<MeetingTrend[]>> {
+    return this.request<MeetingTrend[]>(`/dashboard/trends`);
   }
 
-  async getRecentMeetings() {
-    return this.request(`/dashboard/recent`);
+  async getRecentMeetings(): Promise<ApiResponse<Meeting[]>> {
+    return this.request<Meeting[]>(`/dashboard/recent`);
   }
 
   // Analytics
-  async getAnalytics() {
-    return this.request(`/analytics`);
+  async getAnalytics(): Promise<ApiResponse<AnalyticsData>> {
+    return this.request<AnalyticsData>(`/analytics`);
   }
 
   // Calendar
-  async getCalendarEvents(month?: number, year?: number) {
+  async getCalendarEvents(month?: number, year?: number): Promise<ApiResponse<CalendarEvent[]>> {
     const searchParams = new URLSearchParams();
     if (month !== undefined) searchParams.append("month", month.toString());
     if (year !== undefined) searchParams.append("year", year.toString());
 
     const query = searchParams.toString();
-    return this.request(`/calendar${query ? `?${query}` : ""}`);
+    return this.request<CalendarEvent[]>(`/calendar${query ? `?${query}` : ""}`);
   }
 
   // Summaries
-  async getSummaries() {
-    return this.request(`/summaries`);
+  async getSummaries(): Promise<ApiResponse<MeetingSummary[]>> {
+    return this.request<MeetingSummary[]>(`/summaries`);
   }
 
-  async getSummary(id: string) {
-    return this.request(`/summaries/${id}`);
+  async getSummary(id: string): Promise<ApiResponse<MeetingSummary>> {
+    return this.request<MeetingSummary>(`/summaries/${id}`);
   }
 
-  async getSummaryByMeetingId(meetingId: string) {
-    return this.request(`/summaries/meeting/${meetingId}`);
+  async getSummaryByMeetingId(meetingId: string): Promise<ApiResponse<MeetingSummary>> {
+    return this.request<MeetingSummary>(`/summaries/meeting/${meetingId}`);
   }
 
-  async createSummary(data: any) {
-    return this.request(`/summaries`, {
+  async createSummary(data: any): Promise<ApiResponse<MeetingSummary>> {
+    return this.request<MeetingSummary>(`/summaries`, {
       method: "POST",
       body: JSON.stringify(data),
     });
   }
 
   // Settings
-  async getSettings() {
-    return this.request(`/settings`);
+  async getSettings(): Promise<ApiResponse<UserSettings>> {
+    return this.request<UserSettings>(`/settings`);
   }
 
-  async updateSettings(data: any) {
-    return this.request(`/settings`, {
+  async updateSettings(data: any): Promise<ApiResponse<UserSettings>> {
+    return this.request<UserSettings>(`/settings`, {
       method: "PATCH",
       body: JSON.stringify(data),
     });
