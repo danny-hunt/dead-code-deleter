@@ -6,6 +6,8 @@ import {
   UsagePayload,
   StoredFunction,
   FunctionMetadataFile,
+  DeletionQueue,
+  DeletionQueueItem,
 } from "./types";
 import { getFunctionKey } from "./utils";
 import { promises as fs } from "fs";
@@ -15,6 +17,7 @@ import path from "path";
 const PROJECT_INDEX_PATH = "projects/index.json";
 const getProjectUsagePath = (projectId: string) => `projects/${projectId}/usage.json`;
 const getProjectMetadataPath = (projectId: string) => `projects/${projectId}/metadata.json`;
+const DELETION_QUEUE_PATH = "deletions/queue.json";
 
 // Check if we're running in a serverless environment (Vercel, AWS Lambda, etc.)
 function isServerlessEnvironment(): boolean {
@@ -521,4 +524,121 @@ export async function deleteProject(): Promise<void> {
   // We would need to implement this differently or use Vercel API
   // For now, this is a placeholder
   console.warn("Delete functionality not yet implemented");
+}
+
+/**
+ * Get the deletion queue
+ */
+export async function getDeletionQueue(): Promise<DeletionQueue> {
+  try {
+    // Use local storage if no token configured
+    if (shouldUseLocalStorage()) {
+      console.log("[Local Storage] Reading deletion queue");
+      const content = await readLocalFile(DELETION_QUEUE_PATH);
+      if (!content) {
+        return { items: [] };
+      }
+      return JSON.parse(content) as DeletionQueue;
+    }
+
+    // Use Vercel Blob Storage
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    if (!token) {
+      throw new Error("BLOB_READ_WRITE_TOKEN not configured");
+    }
+
+    // List all blobs to find the queue
+    const { blobs } = await list({
+      token,
+      prefix: "deletions/",
+    });
+
+    const queueBlob = blobs.find((b) => b.pathname === DELETION_QUEUE_PATH);
+
+    if (!queueBlob) {
+      // No queue exists yet, return empty
+      return { items: [] };
+    }
+
+    // Fetch the queue
+    const response = await fetch(queueBlob.url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch deletion queue: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data as DeletionQueue;
+  } catch (error) {
+    console.error("Error fetching deletion queue:", error);
+    // Return empty queue on error
+    return { items: [] };
+  }
+}
+
+/**
+ * Save the deletion queue
+ */
+async function saveDeletionQueue(queue: DeletionQueue): Promise<void> {
+  const content = JSON.stringify(queue, null, 2);
+
+  // Use local storage if no token configured
+  if (shouldUseLocalStorage()) {
+    console.log("[Local Storage] Writing deletion queue");
+    await writeLocalFile(DELETION_QUEUE_PATH, content);
+    return;
+  }
+
+  // Save to Vercel Blob
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!token) {
+    throw new Error("BLOB_READ_WRITE_TOKEN not configured");
+  }
+
+  await put(DELETION_QUEUE_PATH, content, {
+    token,
+    access: "public",
+    contentType: "application/json",
+  });
+}
+
+/**
+ * Add functions to the deletion queue
+ */
+export async function queueFunctionsForDeletion(items: DeletionQueueItem[]): Promise<void> {
+  const queue = await getDeletionQueue();
+
+  // Add new items to the queue (avoid duplicates)
+  for (const item of items) {
+    const exists = queue.items.some(
+      (existing) =>
+        existing.projectId === item.projectId &&
+        existing.file === item.file &&
+        existing.name === item.name &&
+        existing.line === item.line
+    );
+
+    if (!exists) {
+      queue.items.push(item);
+    }
+  }
+
+  await saveDeletionQueue(queue);
+}
+
+/**
+ * Get and clear all deletion queue items for a specific project
+ * This is called when the exampleapp polls for deletions
+ */
+export async function dequeueAllDeletions(projectId: string): Promise<DeletionQueueItem[]> {
+  const queue = await getDeletionQueue();
+
+  // Filter items for this project
+  const projectItems = queue.items.filter((item) => item.projectId === projectId);
+
+  // Remove these items from the queue
+  queue.items = queue.items.filter((item) => item.projectId !== projectId);
+
+  await saveDeletionQueue(queue);
+
+  return projectItems;
 }

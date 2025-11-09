@@ -130,6 +130,31 @@ export interface AgentTriggerResponse {
 }
 
 /**
+ * Function queued for deletion
+ */
+export interface DeletionQueueItem {
+  projectId: string;
+  file: string;
+  name: string;
+  line: number;
+  queuedAt: number;
+}
+
+/**
+ * Deletion queue stored in blob
+ */
+export interface DeletionQueue {
+  items: DeletionQueueItem[];
+}
+
+/**
+ * Response from /api/deletions (GET)
+ */
+export interface DeletionsResponse {
+  deletions: DeletionQueueItem[];
+}
+
+/**
  * Function metadata file from static analysis
  */
 export interface FunctionMetadataFile {
@@ -174,4 +199,3 @@ export type SortColumn = "file" | "name" | "line" | "totalCalls" | "lastSeen";
  * Sort direction
  */
 export type SortDirection = "asc" | "desc";
-

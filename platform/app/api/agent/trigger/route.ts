@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { AgentTriggerResponse } from "@/lib/types";
+import { AgentTriggerResponse, DeletionQueueItem } from "@/lib/types";
+import { queueFunctionsForDeletion } from "@/lib/storage";
 
 /**
  * POST /api/agent/trigger
- * Trigger dead code removal agent (stubbed for now)
+ * Queue functions for deletion by the cursor-agent running on the local machine
  */
 export async function POST(request: NextRequest) {
   try {
@@ -30,19 +31,59 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!body.functions || body.functions.length === 0) {
+      return NextResponse.json<AgentTriggerResponse>(
+        {
+          status: "error",
+          message: "At least one function must be selected",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Parse function keys (format: "file:name:line")
+    const deletionItems: DeletionQueueItem[] = [];
+    for (const funcKey of body.functions) {
+      const parts = funcKey.split(":");
+      if (parts.length < 3) {
+        return NextResponse.json<AgentTriggerResponse>(
+          {
+            status: "error",
+            message: `Invalid function key format: ${funcKey}`,
+          },
+          { status: 400 }
+        );
+      }
+
+      const line = parseInt(parts[parts.length - 1], 10);
+      const name = parts[parts.length - 2];
+      const file = parts.slice(0, parts.length - 2).join(":");
+
+      deletionItems.push({
+        projectId: body.projectId,
+        file,
+        name,
+        line,
+        queuedAt: Date.now(),
+      });
+    }
+
+    // Queue functions for deletion
+    await queueFunctionsForDeletion(deletionItems);
+
     // Log the trigger request
     console.log(
-      `[${new Date().toISOString()}] Agent trigger requested for project "${
+      `[${new Date().toISOString()}] Queued ${deletionItems.length} functions for deletion in project "${
         body.projectId
-      }" with ${body.functions?.length || 0} functions`
+      }"`
     );
 
-    // Return stub response
     const response: AgentTriggerResponse = {
-      status: "stub",
-      message:
-        "Agent integration coming soon! This will integrate with cursor-agent to automatically create PRs removing dead code.",
-      jobId: `stub-${Date.now()}`,
+      status: "success",
+      message: `Queued ${deletionItems.length} function${
+        deletionItems.length !== 1 ? "s" : ""
+      } for deletion. The local cursor-agent will process this soon.`,
+      jobId: `deletion-${Date.now()}`,
     };
 
     return NextResponse.json(response, { status: 200 });
@@ -52,11 +93,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json<AgentTriggerResponse>(
       {
         status: "error",
-        message:
-          error instanceof Error ? error.message : "Failed to trigger agent",
+        message: error instanceof Error ? error.message : "Failed to trigger agent",
       },
       { status: 500 }
     );
   }
 }
-

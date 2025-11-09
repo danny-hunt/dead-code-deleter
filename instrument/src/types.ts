@@ -33,6 +33,20 @@ export interface InstrumentationConfig {
  */
 export type NextConfig = Record<string, any>;
 
+/**
+ * Function queued for deletion
+ */
+export interface DeletionQueueItem {
+  projectId: string;
+  file: string;
+  name: string;
+  line: number;
+  queuedAt: number;
+}
 
-
-
+/**
+ * Response from the deletions API endpoint
+ */
+export interface DeletionsResponse {
+  deletions: DeletionQueueItem[];
+}
