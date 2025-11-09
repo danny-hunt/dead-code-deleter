@@ -393,7 +393,7 @@ export async function saveProjectMetadata(metadata: FunctionMetadataFile): Promi
   const content = JSON.stringify(metadata, null, 2);
 
   // Use local storage if no token configured
-  if (useLocalStorage()) {
+  if (shouldUseLocalStorage()) {
     console.log(`[Local Storage] Writing metadata for ${metadata.projectId}`);
     await writeLocalFile(filePath, content);
     return;
@@ -420,7 +420,7 @@ export async function getProjectMetadata(projectId: string): Promise<FunctionMet
     const filePath = getProjectMetadataPath(projectId);
 
     // Use local storage if no token configured
-    if (useLocalStorage()) {
+    if (shouldUseLocalStorage()) {
       console.log(`[Local Storage] Reading metadata for ${projectId}`);
       const content = await readLocalFile(filePath);
       if (!content) {
@@ -433,8 +433,13 @@ export async function getProjectMetadata(projectId: string): Promise<FunctionMet
             path.resolve(platformDir, "..", "exampleapp", "function-metadata.json"),
             // Also try absolute path from workspace root
             path.resolve(platformDir, "..", "..", "exampleapp", "function-metadata.json"),
-          ];
+            // Try from current working directory (if running from root)
+            path.join(process.cwd(), "exampleapp", "function-metadata.json"),
+            // Try from __dirname if available (for compiled code)
+            typeof __dirname !== "undefined" ? path.join(__dirname, "..", "..", "exampleapp", "function-metadata.json") : null,
+          ].filter((p): p is string => p !== null);
           
+          console.log(`[Local Storage] Metadata not found in storage, trying fallback paths for ${projectId}`);
           for (const exampleappPath of possiblePaths) {
             try {
               const fallbackContent = await fs.readFile(exampleappPath, "utf-8");
@@ -448,8 +453,9 @@ export async function getProjectMetadata(projectId: string): Promise<FunctionMet
               continue;
             }
           }
+          console.log(`[Local Storage] Metadata fallback failed - tried ${possiblePaths.length} paths`);
         } catch (fallbackError) {
-          // Ignore fallback errors
+          console.error(`[Local Storage] Error in metadata fallback:`, fallbackError);
         }
         return null;
       }

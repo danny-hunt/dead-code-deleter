@@ -1,6 +1,6 @@
 {
   "projectId": "example-app",
-  "analyzedAt": 1762697999064,
+  "analyzedAt": 1762700004318,
   "functions": [
     {
       "file": "app/api/analytics/route.ts",
