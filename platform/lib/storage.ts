@@ -1,5 +1,5 @@
 import { put, list } from "@vercel/blob";
-import { ProjectIndex, ProjectUsage, ProjectSummary, UsagePayload, StoredFunction } from "./types";
+import { ProjectIndex, ProjectUsage, ProjectSummary, UsagePayload, StoredFunction, FunctionMetadataFile } from "./types";
 import { getFunctionKey } from "./utils";
 import { promises as fs } from "fs";
 import path from "path";
@@ -7,6 +7,7 @@ import path from "path";
 // Blob paths
 const PROJECT_INDEX_PATH = "projects/index.json";
 const getProjectUsagePath = (projectId: string) => `projects/${projectId}/usage.json`;
+const getProjectMetadataPath = (projectId: string) => `projects/${projectId}/metadata.json`;
 
 // Local storage directory for development
 const LOCAL_STORAGE_DIR = path.join(process.cwd(), ".local-storage");
@@ -307,6 +308,110 @@ export async function updateProjectUsage(payload: UsagePayload): Promise<void> {
     totalFunctions,
     deadCodeCount,
   });
+}
+
+/**
+ * Save project metadata from static analysis
+ */
+export async function saveProjectMetadata(metadata: FunctionMetadataFile): Promise<void> {
+  const filePath = getProjectMetadataPath(metadata.projectId);
+  const content = JSON.stringify(metadata, null, 2);
+
+  // Use local storage if no token configured
+  if (useLocalStorage()) {
+    console.log(`[Local Storage] Writing metadata for ${metadata.projectId}`);
+    await writeLocalFile(filePath, content);
+    return;
+  }
+
+  // Save to Vercel Blob
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (!token) {
+    throw new Error("BLOB_READ_WRITE_TOKEN not configured");
+  }
+
+  await put(filePath, content, {
+    token,
+    access: "public",
+    contentType: "application/json",
+  });
+}
+
+/**
+ * Get project metadata from static analysis
+ */
+export async function getProjectMetadata(projectId: string): Promise<FunctionMetadataFile | null> {
+  try {
+    const filePath = getProjectMetadataPath(projectId);
+
+    // Use local storage if no token configured
+    if (useLocalStorage()) {
+      console.log(`[Local Storage] Reading metadata for ${projectId}`);
+      const content = await readLocalFile(filePath);
+      if (!content) {
+        // In development, try to read directly from exampleapp directory as fallback
+        try {
+          // Try multiple possible paths relative to platform directory
+          const platformDir = process.cwd();
+          const possiblePaths = [
+            path.join(platformDir, "..", "exampleapp", "function-metadata.json"),
+            path.resolve(platformDir, "..", "exampleapp", "function-metadata.json"),
+            // Also try absolute path from workspace root
+            path.resolve(platformDir, "..", "..", "exampleapp", "function-metadata.json"),
+          ];
+          
+          for (const exampleappPath of possiblePaths) {
+            try {
+              const fallbackContent = await fs.readFile(exampleappPath, "utf-8");
+              const metadata = JSON.parse(fallbackContent) as FunctionMetadataFile;
+              if (metadata.projectId === projectId) {
+                console.log(`[Local Storage] Found metadata in exampleapp directory (fallback): ${exampleappPath}`);
+                return metadata;
+              }
+            } catch (pathError) {
+              // Try next path
+              continue;
+            }
+          }
+        } catch (fallbackError) {
+          // Ignore fallback errors
+        }
+        return null;
+      }
+      return JSON.parse(content) as FunctionMetadataFile;
+    }
+
+    // Use Vercel Blob Storage
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    if (!token) {
+      throw new Error("BLOB_READ_WRITE_TOKEN not configured");
+    }
+
+    // List blobs to find the metadata file
+    const { blobs } = await list({
+      token,
+      prefix: `projects/${projectId}/`,
+    });
+
+    const metadataBlob = blobs.find((b) => b.pathname === filePath);
+
+    if (!metadataBlob) {
+      // No metadata exists yet
+      return null;
+    }
+
+    // Fetch the metadata
+    const response = await fetch(metadataBlob.url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch project metadata: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data as FunctionMetadataFile;
+  } catch (error) {
+    console.error(`Error fetching project metadata for ${projectId}:`, error);
+    return null;
+  }
 }
 
 /**

@@ -9,7 +9,7 @@ import {
   getUsageLevelColor,
   getUsageLevelIcon,
 } from "@/lib/utils";
-import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, Users } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -213,6 +213,11 @@ export function UsageStatsTable({
                     <SortIcon column="lastSeen" />
                   </div>
                 </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold w-32">
+                  <div className="flex items-center">
+                    Contributors
+                  </div>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -260,7 +265,41 @@ export function UsageStatsTable({
                       </span>
                     </td>
                     <td className="py-3 px-4 text-sm text-muted-foreground">
-                      {formatTimestamp(func.lastSeen)}
+                      {func.lastSeen > 0 ? formatTimestamp(func.lastSeen) : (
+                        <span className="text-muted-foreground/50">Never</span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4">
+                      {func.contributors && func.contributors.length > 0 ? (
+                        <div className="flex items-center gap-2 group relative">
+                          <Users className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground cursor-help">
+                            {func.contributors.length}
+                          </span>
+                          <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block z-50 pointer-events-none">
+                            <div className="bg-popover border border-border rounded-lg shadow-xl p-3 min-w-[200px] max-w-[300px]">
+                              <div className="text-xs font-semibold mb-2 text-foreground">Contributors:</div>
+                              <div className="space-y-1.5">
+                                {func.contributors.map((contributor, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="text-xs text-muted-foreground"
+                                  >
+                                    {contributor.name}
+                                    {contributor.email && (
+                                      <span className="text-muted-foreground/70 block">
+                                        {contributor.email}
+                                      </span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-muted-foreground/50">—</span>
+                      )}
                     </td>
                   </tr>
                 );
