@@ -630,6 +630,7 @@ export async function queueFunctionsForDeletion(items: DeletionQueueItem[]): Pro
  * This is called when the exampleapp polls for deletions
  */
 export async function dequeueAllDeletions(projectId: string): Promise<DeletionQueueItem[]> {
+  console.log(projectId);
   const queue = await getDeletionQueue();
 
   // Filter items for this project
