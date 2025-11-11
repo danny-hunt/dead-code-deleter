@@ -29,6 +29,12 @@ export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
       category: "main",
     },
     {
+      id: "team",
+      label: "Team",
+      icon: Users,
+      category: "main",
+    },
+    {
       id: "analytics",
       label: "Analytics",
       icon: BarChart3,
@@ -41,6 +47,24 @@ export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
       category: "insights",
     },
     {
+      id: "reports",
+      label: "Reports",
+      icon: FileText,
+      category: "insights",
+    },
+    {
+      id: "templates",
+      label: "Templates",
+      icon: FileText,
+      category: "tools",
+    },
+    {
+      id: "integrations",
+      label: "Integrations",
+      icon: LogOut,
+      category: "tools",
+    },
+    {
       id: "settings",
       label: "Settings",
       icon: Settings,
@@ -50,6 +74,7 @@ export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
 
   const mainItems = menuItems.filter((i) => i.category === "main")
   const insightItems = menuItems.filter((i) => i.category === "insights")
+  const toolItems = menuItems.filter((i) => i.category === "tools")
   const adminItems = menuItems.filter((i) => i.category === "admin")
 
   const MenuItem = ({ item }: any) => {
@@ -100,6 +125,16 @@ export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
           <h3 className="text-xs font-semibold text-sidebar-foreground/60 uppercase mb-3 px-2">Insights</h3>
           <div className="space-y-2">
             {insightItems.map((item) => (
+              <MenuItem key={item.id} item={item} />
+            ))}
+          </div>
+        </div>
+
+        {/* Tools */}
+        <div>
+          <h3 className="text-xs font-semibold text-sidebar-foreground/60 uppercase mb-3 px-2">Tools</h3>
+          <div className="space-y-2">
+            {toolItems.map((item) => (
               <MenuItem key={item.id} item={item} />
             ))}
           </div>

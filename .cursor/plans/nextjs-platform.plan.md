@@ -80,6 +80,7 @@ withInstrumentation({
 ## Architecture
 
 ### Data Flow
+
 1. Instrumented apps POST usage data to `/api/usage` every 10 seconds
 2. Platform receives data, fetches existing project blob from Vercel Blob Storage
 3. Platform aggregates new call counts with existing totals (sums them)
@@ -92,6 +93,7 @@ withInstrumentation({
 Since Vercel Blob is object storage (not a database), we'll use this structure:
 
 **Project Index** (`projects/index.json`):
+
 ```typescript
 {
   projects: [
@@ -106,6 +108,7 @@ Since Vercel Blob is object storage (not a database), we'll use this structure:
 ```
 
 **Project Usage Data** (`projects/{projectId}/usage.json`):
+
 ```typescript
 {
   projectId: string,
@@ -127,12 +130,15 @@ Since Vercel Blob is object storage (not a database), we'll use this structure:
 ### Aggregation Logic
 
 When receiving new data:
+
 1. Parse incoming functions array
 2. For each function, create key: `${file}:${name}:${line}`
 3. Fetch existing project usage blob
 4. For each function:
+
    - If exists: `totalCalls += callCount`, update `lastSeen`
    - If new: Create entry with `totalCalls = callCount`, set `firstSeen` and `lastSeen`
+
 5. Save updated blob
 
 ## Implementation
@@ -140,6 +146,7 @@ When receiving new data:
 ### 1. API Routes
 
 **`app/api/usage/route.ts` (POST)**
+
 - Receives instrumentation data from client apps
 - Validates payload:
   ```typescript
@@ -154,16 +161,19 @@ When receiving new data:
     }>;
   }
   ```
+
 - Calls `storage.updateProjectUsage(payload)` to aggregate data
 - Returns `{ success: true }` or error
 - Handles CORS for cross-origin requests
 
 **`app/api/projects/route.ts` (GET)**
+
 - Returns list of all instrumented projects
 - Reads from `projects/index.json` blob
 - Response: `{ projects: ProjectSummary[] }`
 
 **`app/api/projects/[projectId]/route.ts` (GET)**
+
 - Returns function usage stats for specific project
 - Query params:
   - `sort`: "calls" | "name" | "file" (default: "calls")
@@ -185,7 +195,9 @@ When receiving new data:
   }
   ```
 
+
 **`app/api/agent/trigger/route.ts` (POST)**
+
 - Stub for cursor-agent integration
 - Accepts: `{ projectId: string, functions: string[] }` (array of keys)
 - Returns mock response: `{ status: "stub", message: "Agent integration coming soon" }`
@@ -196,6 +208,7 @@ When receiving new data:
 **Single Page Application (`app/page.tsx`)**
 
 Layout:
+
 ```
 ┌─────────────────────────────────────────┐
 │  Dead Code Platform                     │
@@ -226,11 +239,12 @@ Layout:
 ```
 
 Components needed:
+
 - **ProjectSelector** (`components/project-selector.tsx`)
   - Fetches projects from `/api/projects`
   - Dropdown to switch between projects
   - Shows last updated time
-  
+
 - **UsageStatsTable** (`components/usage-stats-table.tsx`)
   - Fetches function data from `/api/projects/[projectId]`
   - Displays all functions with file path, name, line, total calls
@@ -241,14 +255,14 @@ Components needed:
     - 🟢 Green: 10+ calls (active)
   - File path truncation (show relative path from project root)
   - Click to select functions for removal
-  
+
 - **AgentTrigger** (`components/agent-trigger.tsx`)
   - Button to trigger dead code removal
   - Accepts selected functions from table
   - POSTs to `/api/agent/trigger`
   - Shows stub message for now
   - TODO: Will show agent progress and PR link
-  
+
 - **EmptyState** (inline in page)
   - Shows when no projects exist
   - Instructions to set up instrumentation
@@ -256,6 +270,7 @@ Components needed:
 ### 3. Dependencies & Setup
 
 **Required packages:**
+
 ```json
 {
   "dependencies": {
@@ -274,6 +289,7 @@ Components needed:
 ```
 
 **Environment variables:**
+
 ```bash
 BLOB_READ_WRITE_TOKEN=vercel_blob_token_here
 ```
@@ -341,6 +357,7 @@ export async function updateProjectUsage(payload: UsagePayload): Promise<void>
 ```
 
 Aggregation logic example:
+
 ```typescript
 async function updateProjectUsage(payload: UsagePayload) {
   const existing = await getProjectUsage(payload.projectId) || { functions: {} };
@@ -373,6 +390,7 @@ async function updateProjectUsage(payload: UsagePayload) {
 ```
 
 **Types** (`lib/types.ts`):
+
 ```typescript
 // Match instrumentation library format exactly
 export interface FunctionUsage {
@@ -420,6 +438,7 @@ export interface ProjectIndex {
 ```
 
 **Utilities** (`lib/utils.ts`):
+
 ```typescript
 // Format file paths for display (remove absolute path, show relative)
 export function formatFilePath(fullPath: string, projectId: string): string
@@ -449,6 +468,7 @@ Use the exampleapp as the first test case:
 ### Expected test data from exampleapp
 
 After using the exampleapp, platform should show:
+
 - Project: "example-app"
 - ~40-50 functions tracked
 - High usage: API client functions, page components
@@ -485,4 +505,3 @@ After using the exampleapp, platform should show:
 - [ ] Assemble main page (`app/page.tsx`) with all components
 - [ ] Add loading states, error handling, and empty states throughout
 - [ ] Test with instrumented exampleapp and verify data flow end-to-end
-

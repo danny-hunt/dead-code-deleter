@@ -1,0 +1,6 @@
+{
+  "name": "Sample Meeting",
+  "email": "test@example.com",
+  "body": "This is a sample fixture file for Cypress tests"
+}
+

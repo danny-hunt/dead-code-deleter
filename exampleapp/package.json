@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test:e2e": "cypress run",
+    "test:e2e:headed": "cypress run --headed"
   },
   "dependencies": {
     "@dead-code-deleter/instrument": "file:../instrument",
@@ -68,6 +72,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-loader": "^10.0.0",
+    "cypress": "^15.6.0",
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",
